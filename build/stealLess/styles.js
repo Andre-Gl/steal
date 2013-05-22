@@ -84,7 +84,11 @@ steal(function ( steal ) {
 					file = steal.File(steal.File(path.file).joinFrom(cssLoc));
 					fin = _filesBuffer[file.path];
 				} else {
-					file = steal.File(steal.File(path.file).joinFrom(lessPath));
+					if (isRelativeFilePath(path.file)) {
+						file = steal.File(steal.File(path.file).joinFrom(lessPath));
+					} else {
+						file = steal.File(path.file.replace(/file:[\/]+/g, ""));
+					}
 					fin = _filesBuffer[file.path];
 				}
 
@@ -132,6 +136,10 @@ steal(function ( steal ) {
 	isRelative = function (part) {
 		// http://, https://, /
 		return !/^(http:\/\/|https:\/\/|\/)/.test(part);
+	},
+	isRelativeFilePath = function(part) {
+		// file://
+		return !/^(file:\/\/)/.test(part);
 	},
 	isBinaryImage = function (part) {
 		return part.indexOf('base64') !== -1 || part.indexOf('data:') !== -1;
